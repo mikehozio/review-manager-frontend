@@ -93,6 +93,10 @@
 .location-name-review {
   text-align: left;
   color: rgb(190, 190, 190);
+  text-decoration-line: none;
+}
+.location-name-review a{
+  text-decoration-line: none;
 }
 .overall-rating {
   background-color: #f90 !important;

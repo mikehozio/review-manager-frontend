@@ -62,7 +62,7 @@ function SingleReview ({ review, locationsObj }) {
                             <div className="reviewer-name-wrap"><span className="reviewer-name">{review.reviewer.displayName}</span></div>
                             <Stack className="stars" direction='row' spacing={0}>{Array(RATING_TO_INT[review.starRating]).fill(<StarIcon fontSize="small"/>)}{Array(5-RATING_TO_INT[review.starRating]).fill(<StarBorderIcon fontSize="small"/>)}</Stack>
                         </Stack>
-                    <div className="location-name-review"><span className="location-name">{locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['gbp_name']}</span></div>
+                    <div className="location-name-review"><a href={`https://www.google.com/search?q=${locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['gbp_name']} (${locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['address']})`.replace('&', '%26')} target="_blank"><span className="location-name">{`${locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['gbp_name']} (${locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['address']})`}</span></a></div>
                     </Stack>
                 </Stack>
                 <div className="review-date-wrap"><span className="raview-date">{new Date(review.createTime.split('T')[0]).toLocaleDateString()}</span></div>
@@ -74,7 +74,7 @@ function SingleReview ({ review, locationsObj }) {
             {replying && <div className='review-reply-editor'><textarea placeholder='Enter your reply here' rows='6' className='review-textarea' value={replyValue} onChange={(e) => setReplyValue(e.target.value)}></textarea></div>}
             <Stack className="review-footer" direction='row' justifyContent='flex-end'>
                 {(replying || (!replying && !('reviewReply' in review))) && <Button className="suggest-button" onClick={() => handleSuggestResponse()}>Suggest Reply</Button>}
-                {replying && <Button className="cancel-button" onClick={() => {setReplying(!replying); setReplyValue('');}}>cancel</Button>}
+                {replying && <Button className="cancel-button" onClick={() => {setReplying(!replying); setReplyValue('reviewReply' in review?review.reviewReply.comment:'');}}>cancel</Button>}
                 {replying?<Button className="submit-button" variant="contained" color={submitColor} onClick={handleSubmit}>Submit</Button>:<Button className="reply-button" variant="contained" onClick={() => setReplying(true)} endIcon={<CreateOutlinedIcon />}>{'reviewReply' in review?'Edit Reply':'Reply'}</Button>}
             </Stack>
         </div>
