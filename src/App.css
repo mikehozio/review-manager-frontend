@@ -46,6 +46,7 @@
   scrollbar-width: thin;
   scrollbar-color: pink rgba(28, 96, 212, .2);
   word-break:break-all;
+  margin-top: 5px;
 }
 .accounts-list {
   padding: 5px;

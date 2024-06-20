@@ -1,11 +1,12 @@
 import {Stack, Button} from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { useState } from 'react';
 const RATING_TO_INT = {'FIVE': 5, 'FOUR': 4, 'THREE': 3, 'TWO': 2, 'ONE': 1}
 
-function SingleReview ({ review, locationsObj }) {
+function SingleReview ({ review, locationsObj, status }) {
     const [replying, setReplying] = useState(false);
     const [replyValue, setReplyValue] = useState('reviewReply' in review?review.reviewReply.comment:'');
     const [submitColor, setSubmitColor] = useState('primary')
@@ -72,10 +73,11 @@ function SingleReview ({ review, locationsObj }) {
                 <span className="review-response-content">{replyValue}</span>
             </div>}
             {replying && <div className='review-reply-editor'><textarea placeholder='Enter your reply here' rows='6' className='review-textarea' value={replyValue} onChange={(e) => setReplyValue(e.target.value)}></textarea></div>}
-            <Stack className="review-footer" direction='row' justifyContent='flex-end'>
-                {(replying || (!replying && !('reviewReply' in review))) && <Button className="suggest-button" onClick={() => handleSuggestResponse()}>Suggest Reply</Button>}
+            <Stack className="review-footer" direction='row' justifyContent='flex-end' alignItems='center'>
+                {status==='on' && <CheckCircleIcon color='success'/>}
+                {(replying || (!replying && !('reviewReply' in review))) && <Button className="suggest-button" disabled={status==='off'?true:false} onClick={() => handleSuggestResponse()}>Suggest Reply</Button>}
                 {replying && <Button className="cancel-button" onClick={() => {setReplying(!replying); setReplyValue('reviewReply' in review?review.reviewReply.comment:'');}}>cancel</Button>}
-                {replying?<Button className="submit-button" variant="contained" color={submitColor} onClick={handleSubmit}>Submit</Button>:<Button className="reply-button" variant="contained" onClick={() => setReplying(true)} endIcon={<CreateOutlinedIcon />}>{'reviewReply' in review?'Edit Reply':'Reply'}</Button>}
+                {replying?<Button className="submit-button" variant="contained" color={submitColor} onClick={handleSubmit}>Submit</Button>:<Button className="reply-button" variant="contained" disabled={status==='off'?true:false} onClick={() => setReplying(true)} endIcon={<CreateOutlinedIcon />}>{'reviewReply' in review?'Edit Reply':'Reply'}</Button>}
             </Stack>
         </div>
     )

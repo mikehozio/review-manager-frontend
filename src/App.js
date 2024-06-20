@@ -1,6 +1,8 @@
 import './App.css';
 import * as React from 'react';
-import {Stack, Chip, MenuItem, FormControl, Select, Button, Tooltip, ButtonBase} from '@mui/material';
+import {Stack, Chip, MenuItem, FormControl, Select, Button, Tooltip, ButtonBase, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DoNotDisturbOnIcon from '@mui/icons-material/DoNotDisturbOn';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SingleReview from './SingleReview';
 
@@ -14,6 +16,8 @@ function App() {
   const [reviewsList, setReviewsList] = React.useState([]);
   const reviewPage = React.useRef(1);
   const [activeLoc, setActiveLoc] = React.useState('*');
+  const [activeLocStatus, setActiveLocStatus] = React.useState('');
+  const activeLocStatusesObj = React.useRef({});
   const [fetching, setFetching] = React.useState(false);
   const [allClicked, setAllClicked] = React.useState(true);
   const [repliedClicked, setRepliedClicked] = React.useState(false);
@@ -43,6 +47,14 @@ function App() {
             console.log(jsonres);
             setReviews(jsonres);
             setReviewsList([...reviewsList, ...jsonres['reviews']]);
+          }
+        )
+      );
+      await fetch('http://192.168.1.100:12500/get-statuses').then(
+        res => res.json().then(
+          jsonres => {
+            console.log(jsonres);
+            activeLocStatusesObj.current = jsonres;
           }
         )
       );
@@ -90,7 +102,17 @@ function App() {
   const handleAccountClick = async (loc) => {
     reviewPage.current = 1;
     console.log(loc);
-    activeLoc === loc.gbp_id?setActiveLoc('*'):setActiveLoc(loc.gbp_id);
+    if (activeLoc === loc.gbp_id) {
+      setActiveLoc('*');
+      setActiveLocStatus(null);
+      console.log('y');
+    } else {
+      setActiveLoc(loc.gbp_id);
+    }
+    if (loc.gbp_id in activeLocStatusesObj.current) {
+      console.log(activeLocStatusesObj.current[loc.gbp_id]);
+      setActiveLocStatus(activeLocStatusesObj.current[loc.gbp_id]);
+    }
     await fetch(`http://192.168.1.100:12500/get-reviews?gbpid=${activeLoc === loc.gbp_id?'*':loc.gbp_id}`).then(
       res => res.json().then(
         jsonres => {
@@ -117,11 +139,49 @@ function App() {
     setReviewsList(event.target.value === ''?sorted:event.target.value === 'lowest'?sorted.sort((a,b) => (RATING_TO_INT[a.starRating] - RATING_TO_INT[b.starRating])):sorted.sort((a,b) => (RATING_TO_INT[b.starRating] - RATING_TO_INT[a.starRating])));
   }
 
+  const handleLocStatus = async (e, selected) => {
+    console.log(selected);
+    const rawResponse = await fetch('http://192.168.1.100:12500/update-status', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({gbpid: activeLoc, status: selected})
+    });
+    console.log(rawResponse);
+    if (rawResponse.ok) {
+        setActiveLocStatus(selected);
+        let temp = activeLocStatusesObj.current;
+        temp[activeLoc] = selected;
+        activeLocStatusesObj.current = temp;
+        console.log(rawResponse.status);
+    } else {
+        console.log(rawResponse.status);
+    }
+  }
+
   return (
     <div className="App">
       <Stack direction="row" className='page-wrapper' alignItems='flex-start' justifyContent='center' spacing={3}>
         <div className="sidebar sticky">
-          <h1 className="sidebar-label">Accounts</h1>
+          <Stack direction="row" spacing={2} alignItems='center'>
+            <h1 className="sidebar-label">Accounts</h1>
+            {activeLoc!=='*'&&<ToggleButtonGroup
+              value={activeLocStatus}
+              exclusive
+              onChange={handleLocStatus}
+              size="small"
+              aria-label="text alignment"
+            >
+              <ToggleButton value="on">
+                <CheckCircleIcon color='success'/>
+              </ToggleButton>
+              <ToggleButton value="off">
+                <DoNotDisturbOnIcon color='error'/>
+              </ToggleButton>
+            </ToggleButtonGroup>}
+          </Stack>
           <div className="sidebar-accounts-list-wrapper">
             <Stack className='accounts-list' spacing={1} alignItems='flex-start' >
               {locationsList && locationsList.map((loc, i) =>
@@ -167,7 +227,7 @@ function App() {
           <div className="all-reviews">
             <Stack className="all-reviews-wrapper" spacing={2}>
               {reviewsList && reviewsList.map((review) => (
-                <SingleReview review={review} locationsObj={locationsObj} key={review.reviewId}/>
+                <SingleReview review={review} locationsObj={locationsObj} status={review.name.split('/review')[0].split('locations/').slice(-1)[0] in activeLocStatusesObj.current?activeLocStatusesObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]:null} key={review.reviewId}/>
               ))}
               <Button className="load-more-button" variant="contained" color='info' onClick={handleLoadMore}>Load More</Button>
             </Stack>
