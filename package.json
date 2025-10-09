@@ -1,11 +1,10 @@
 {
   "name": "review-manager",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "main": "electron.js",
   "homepage": "./",
   "description": "Review Manager Application",
   "author": "Beast Mode",
-  "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
