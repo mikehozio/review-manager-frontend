@@ -6,6 +6,33 @@ const { autoUpdater } = require('electron-updater');
 // More reliable dev mode detection
 const isDev = !app.isPackaged;
 
+// Auto-updater events - Set up BEFORE creating window
+autoUpdater.on('checking-for-update', () => {
+  console.log('Checking for updates...');
+});
+
+autoUpdater.on('update-available', (info) => {
+  console.log('Update available:', info.version);
+});
+
+autoUpdater.on('update-not-available', (info) => {
+  console.log('Update not available:', info.version);
+});
+
+autoUpdater.on('error', (err) => {
+  console.error('Error in auto-updater:', err);
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  console.log(`Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}%`);
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  console.log('Update downloaded:', info.version);
+  // Install and restart the app
+  autoUpdater.quitAndInstall();
+});
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
@@ -39,33 +66,6 @@ function createWindow() {
 
   return win;
 }
-
-// Auto-updater events
-autoUpdater.on('checking-for-update', () => {
-  console.log('Checking for updates...');
-});
-
-autoUpdater.on('update-available', (info) => {
-  console.log('Update available:', info.version);
-});
-
-autoUpdater.on('update-not-available', (info) => {
-  console.log('Update not available:', info.version);
-});
-
-autoUpdater.on('error', (err) => {
-  console.error('Error in auto-updater:', err);
-});
-
-autoUpdater.on('download-progress', (progressObj) => {
-  console.log(`Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}%`);
-});
-
-autoUpdater.on('update-downloaded', (info) => {
-  console.log('Update downloaded:', info.version);
-  // Install and restart the app
-  autoUpdater.quitAndInstall();
-});
 
 app.whenReady().then(createWindow);
 

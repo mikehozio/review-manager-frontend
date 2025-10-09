@@ -1,6 +1,6 @@
 {
   "name": "review-manager",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "electron.js",
   "homepage": "./",
   "description": "Review Manager Application",
