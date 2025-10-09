@@ -44,7 +44,7 @@
   overflow-y: scroll;
   overflow-x:visible;
   scrollbar-width: thin;
-  scrollbar-color: pink rgba(28, 96, 212, .2);
+  scrollbar-color: rgb(26, 25, 25) rgba(28, 96, 212, .2);
   word-break:break-all;
   margin-top: 5px;
 }
@@ -59,7 +59,7 @@
 .account-wrap-wrapper-clickable-active {
   cursor: pointer;
   width: 100%;  
-  background-color: pink !important;
+  background-color: blue !important;
   color: white !important;
   padding: 2px !important;
 }
@@ -131,9 +131,9 @@
   line-height: 1.5em;
 }
 .stars svg {
-  fill: pink !important;
+  fill: orange !important;
 }
 
 .reply-button {
-  background-color: pink !important;
+  background-color: blue !important;
 }

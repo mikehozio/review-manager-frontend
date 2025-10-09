@@ -25,7 +25,7 @@ function App() {
 
   React.useEffect(() => {
     async function getData() {
-      await fetch('http://192.168.1.100:12500/all-locations').then(
+      await fetch('http://192.168.15.2:12500/all-locations').then(
         res => res.json().then(
           jsonres => {
             locationsObj.current = jsonres;
@@ -41,7 +41,7 @@ function App() {
           }
         )
       );
-      await fetch('http://192.168.1.100:12500/get-reviews').then(
+      await fetch('http://192.168.15.2:12500/get-reviews').then(
         res => res.json().then(
           jsonres => {
             console.log(jsonres);
@@ -50,7 +50,7 @@ function App() {
           }
         )
       );
-      await fetch('http://192.168.1.100:12500/get-statuses').then(
+      await fetch('http://192.168.15.2:12500/get-statuses').then(
         res => res.json().then(
           jsonres => {
             console.log(jsonres);
@@ -65,7 +65,7 @@ function App() {
 
   const handleFetchReviews = async () => {
     setFetching(true);
-    await fetch(`http://192.168.1.100:12500/fetch-new`).then(
+    await fetch(`http://192.168.15.2:12500/fetch-new`).then(
       res => res.json().then(
         jsonres => {
           setReviews({'reviews': jsonres['reviews'], 'allReviews': jsonres['allReviews'], 'replied': jsonres['replied']});
@@ -88,7 +88,7 @@ function App() {
 
   const handleLoadMore = async () => {
     reviewPage.current = reviewPage.current + 1;
-    await fetch(`http://192.168.1.100:12500/get-reviews?gbpid=${activeLoc}&page=${reviewPage.current}`).then(
+    await fetch(`http://192.168.15.2:12500/get-reviews?gbpid=${activeLoc}&page=${reviewPage.current}`).then(
       res => res.json().then(
         jsonres => {
           console.log({'reviews': [...reviews['reviews'], ...jsonres['reviews']], 'allReviews': jsonres['allReviews'], 'replied': jsonres['replied']});
@@ -113,7 +113,7 @@ function App() {
       console.log(activeLocStatusesObj.current[loc.gbp_id]);
       setActiveLocStatus(activeLocStatusesObj.current[loc.gbp_id]);
     }
-    await fetch(`http://192.168.1.100:12500/get-reviews?gbpid=${activeLoc === loc.gbp_id?'*':loc.gbp_id}`).then(
+    await fetch(`http://192.168.15.2:12500/get-reviews?gbpid=${activeLoc === loc.gbp_id?'*':loc.gbp_id}`).then(
       res => res.json().then(
         jsonres => {
           console.log(jsonres);
@@ -141,7 +141,7 @@ function App() {
 
   const handleLocStatus = async (e, selected) => {
     console.log(selected);
-    const rawResponse = await fetch('http://192.168.1.100:12500/update-status', {
+    const rawResponse = await fetch('http://192.168.15.2:12500/update-status', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',

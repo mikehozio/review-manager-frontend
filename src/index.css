@@ -13,12 +13,12 @@ code {
 }
 
 html {
-  /* background-color: rgba(28, 96, 212, .2); */
-  background-image: url('tgkPkLn-blue-hello-kitty-wallpaper.jpg');
+  background-color: rgba(28, 96, 212, .2);
+  /* background-image: url('tgkPkLn-blue-hello-kitty-wallpaper.jpg'); */
   background-repeat: no-repeat;
   background-size: cover;
   background-attachment: fixed;
   overflow-y: scroll;
   scrollbar-width: thin;
-  scrollbar-color: pink rgba(28, 96, 212, .2);
+  scrollbar-color: rgb(83, 119, 236) rgba(28, 96, 212, .2);
 }

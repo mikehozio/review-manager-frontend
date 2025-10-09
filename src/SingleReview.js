@@ -13,7 +13,7 @@ function SingleReview ({ review, locationsObj, status }) {
 
     const handleSubmit = async () => {
         console.log(replyValue);
-        const rawResponse = await fetch('http://192.168.1.100:12500/review-reply', {
+        const rawResponse = await fetch('http://192.168.15.2:12500/review-reply', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -35,13 +35,13 @@ function SingleReview ({ review, locationsObj, status }) {
     const handleSuggestResponse = async () => {
         console.log(replyValue);
         setReplying(true);
-        const rawResponse = await fetch('http://192.168.1.100:12500/suggest-response', {
+        const rawResponse = await fetch('http://192.168.15.2:12500/suggest-response', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({reviewContent: review.comment})
+            body: JSON.stringify({reviewContent: review.comment ? review.comment : '', mainCategory: locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['mainCategory'], starRating: RATING_TO_INT[review.starRating], 'reviewerName': review.reviewer.displayName, 'companyName': locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['gbp_name'], 'companyAddress': locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['address']})
         });
         console.log(rawResponse);
         if (rawResponse.ok) {
