@@ -21,15 +21,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build React app
-        run: npm run build
-        env:
-          CI: false
-
       - name: Build Electron app
         run: npm run electron:build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: false
+          DISABLE_ESLINT_PLUGIN: true
 
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
