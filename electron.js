@@ -2,33 +2,40 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
 const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
 
 // More reliable dev mode detection
 const isDev = !app.isPackaged;
 
+// Route all auto-updater logs to file
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+
+log.info('App starting. Version:', app.getVersion());
+
 // Auto-updater events - Set up BEFORE creating window
 autoUpdater.on('checking-for-update', () => {
-  console.log('Checking for updates...');
+  log.info('Checking for updates...');
 });
 
 autoUpdater.on('update-available', (info) => {
-  console.log('Update available:', info.version);
+  log.info('Update available:', info.version);
 });
 
 autoUpdater.on('update-not-available', (info) => {
-  console.log('Update not available:', info.version);
+  log.info('Update not available. Current version is latest:', info.version);
 });
 
 autoUpdater.on('error', (err) => {
-  console.error('Error in auto-updater:', err);
+  log.error('Error in auto-updater:', err);
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
-  console.log(`Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}%`);
+  log.info(`Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}%`);
 });
 
 autoUpdater.on('update-downloaded', (info) => {
-  console.log('Update downloaded:', info.version);
+  log.info('Update downloaded:', info.version);
   // Install and restart the app
   autoUpdater.quitAndInstall();
 });
