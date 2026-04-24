@@ -7,6 +7,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SingleReview from './SingleReview';
 
 const RATING_TO_INT = {'FIVE': 5, 'FOUR': 4, 'THREE': 3, 'TWO': 2, 'ONE': 1}
+const BACKEND_URL = 'http://192.168.26.8:12500'
 
 function App() {
   const [sort, setSort] = React.useState('');
@@ -25,7 +26,7 @@ function App() {
 
   React.useEffect(() => {
     async function getData() {
-      await fetch('http://192.168.15.2:12500/all-locations').then(
+      await fetch(`${BACKEND_URL}/all-locations`).then(
         res => res.json().then(
           jsonres => {
             locationsObj.current = jsonres;
@@ -41,7 +42,7 @@ function App() {
           }
         )
       );
-      await fetch('http://192.168.15.2:12500/get-reviews').then(
+      await fetch(`${BACKEND_URL}/get-reviews`).then(
         res => res.json().then(
           jsonres => {
             console.log(jsonres);
@@ -50,7 +51,7 @@ function App() {
           }
         )
       );
-      await fetch('http://192.168.15.2:12500/get-statuses').then(
+      await fetch(`${BACKEND_URL}/get-statuses`).then(
         res => res.json().then(
           jsonres => {
             console.log(jsonres);
@@ -66,7 +67,7 @@ function App() {
 
   const handleFetchReviews = async () => {
     setFetching(true);
-    await fetch(`http://192.168.15.2:12500/fetch-new`).then(
+    await fetch(`${BACKEND_URL}/fetch-new`).then(
       res => res.json().then(
         jsonres => {
           setReviews({'reviews': jsonres['reviews'], 'allReviews': jsonres['allReviews'], 'replied': jsonres['replied']});
@@ -89,7 +90,7 @@ function App() {
 
   const handleLoadMore = async () => {
     reviewPage.current = reviewPage.current + 1;
-    await fetch(`http://192.168.15.2:12500/get-reviews?gbpid=${activeLoc}&page=${reviewPage.current}`).then(
+    await fetch(`${BACKEND_URL}/get-reviews?gbpid=${activeLoc}&page=${reviewPage.current}`).then(
       res => res.json().then(
         jsonres => {
           console.log({'reviews': [...reviews['reviews'], ...jsonres['reviews']], 'allReviews': jsonres['allReviews'], 'replied': jsonres['replied']});
@@ -114,7 +115,7 @@ function App() {
       console.log(activeLocStatusesObj.current[loc.gbp_id]);
       setActiveLocStatus(activeLocStatusesObj.current[loc.gbp_id]);
     }
-    await fetch(`http://192.168.15.2:12500/get-reviews?gbpid=${activeLoc === loc.gbp_id?'*':loc.gbp_id}`).then(
+    await fetch(`${BACKEND_URL}/get-reviews?gbpid=${activeLoc === loc.gbp_id?'*':loc.gbp_id}`).then(
       res => res.json().then(
         jsonres => {
           console.log(jsonres);
@@ -142,7 +143,7 @@ function App() {
 
   const handleLocStatus = async (e, selected) => {
     console.log(selected);
-    const rawResponse = await fetch('http://192.168.15.2:12500/update-status', {
+    const rawResponse = await fetch(`${BACKEND_URL}/update-status`, {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -228,7 +229,7 @@ function App() {
           <div className="all-reviews">
             <Stack className="all-reviews-wrapper" spacing={2}>
               {reviewsList && reviewsList.map((review) => (
-                <SingleReview review={review} locationsObj={locationsObj} status={review.name.split('/review')[0].split('locations/').slice(-1)[0] in activeLocStatusesObj.current?activeLocStatusesObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]:null} key={review.reviewId}/>
+                <SingleReview review={review} locationsObj={locationsObj} status={review.name.split('/review')[0].split('locations/').slice(-1)[0] in activeLocStatusesObj.current?activeLocStatusesObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]:null} backendUrl={BACKEND_URL} key={review.reviewId}/>
               ))}
               <Button className="load-more-button" variant="contained" color='info' onClick={handleLoadMore}>Load More</Button>
             </Stack>

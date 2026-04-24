@@ -6,14 +6,14 @@ import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { useState } from 'react';
 const RATING_TO_INT = {'FIVE': 5, 'FOUR': 4, 'THREE': 3, 'TWO': 2, 'ONE': 1}
 
-function SingleReview ({ review, locationsObj, status }) {
+function SingleReview ({ review, locationsObj, status, backendUrl }) {
     const [replying, setReplying] = useState(false);
     const [replyValue, setReplyValue] = useState('reviewReply' in review?review.reviewReply.comment:'');
     const [submitColor, setSubmitColor] = useState('primary')
 
     const handleSubmit = async () => {
         console.log(replyValue);
-        const rawResponse = await fetch('http://192.168.15.2:12500/review-reply', {
+        const rawResponse = await fetch(`${backendUrl}/review-reply`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -35,7 +35,7 @@ function SingleReview ({ review, locationsObj, status }) {
     const handleSuggestResponse = async () => {
         console.log(replyValue);
         setReplying(true);
-        const rawResponse = await fetch('http://192.168.15.2:12500/suggest-response', {
+        const rawResponse = await fetch(`${backendUrl}/suggest-response`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
