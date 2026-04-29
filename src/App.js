@@ -11,6 +11,7 @@ const BACKEND_URL = 'http://192.168.26.8:12500'
 
 function App() {
   const [sort, setSort] = React.useState('');
+  const [updateReady, setUpdateReady] = React.useState(false);
   const locationsObj = React.useRef({});
   const [locationsList, setLocationsList] = React.useState(null);
   const [reviews, setReviews] = React.useState({});
@@ -23,6 +24,12 @@ function App() {
   const [allClicked, setAllClicked] = React.useState(true);
   const [repliedClicked, setRepliedClicked] = React.useState(false);
   const [notRepliedClicked, setNotRepliedClicked] = React.useState(false);
+
+  React.useEffect(() => {
+    const { ipcRenderer } = window.require('electron');
+    ipcRenderer.on('update-ready', () => setUpdateReady(true));
+    return () => ipcRenderer.removeAllListeners('update-ready');
+  }, []);
 
   React.useEffect(() => {
     async function getData() {
@@ -163,8 +170,19 @@ function App() {
     }
   }
 
+  const handleRestartAndInstall = () => {
+    const { ipcRenderer } = window.require('electron');
+    ipcRenderer.invoke('restart-and-install');
+  };
+
   return (
     <div className="App">
+      {updateReady && (
+        <div className="update-banner">
+          An update has been downloaded —{' '}
+          <button className="update-banner-button" onClick={handleRestartAndInstall}>Restart to install</button>
+        </div>
+      )}
       <Stack direction="row" className='page-wrapper' alignItems='flex-start' justifyContent='center' spacing={3}>
         <div className="sidebar sticky">
           <Stack direction="row" spacing={2} alignItems='center'>

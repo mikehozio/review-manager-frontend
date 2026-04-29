@@ -61,7 +61,6 @@
     "files": [
       "build/**/*",
       "electron.js",
-      "node_modules/**/*",
       "package.json"
     ],
     "asar": true,

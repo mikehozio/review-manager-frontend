@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
 const { autoUpdater } = require('electron-updater');
@@ -13,7 +13,9 @@ autoUpdater.logger.transports.file.level = 'info';
 
 log.info('App starting. Version:', app.getVersion());
 
-// Auto-updater events - Set up BEFORE creating window
+let mainWindow = null;
+
+// Auto-updater events
 autoUpdater.on('checking-for-update', () => {
   log.info('Checking for updates...');
 });
@@ -36,12 +38,17 @@ autoUpdater.on('download-progress', (progressObj) => {
 
 autoUpdater.on('update-downloaded', (info) => {
   log.info('Update downloaded:', info.version);
-  // Install and restart the app
+  if (mainWindow) {
+    mainWindow.webContents.send('update-ready');
+  }
+});
+
+ipcMain.handle('restart-and-install', () => {
   autoUpdater.quitAndInstall();
 });
 
 function createWindow() {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
@@ -59,22 +66,22 @@ function createWindow() {
         slashes: true
       });
 
-  win.loadURL(startUrl);
+  mainWindow.loadURL(startUrl);
 
   // Open DevTools in development
   if (isDev) {
-    win.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
   }
-
-  // Check for updates (only in production)
-  if (!isDev) {
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-
-  return win;
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+
+  if (!isDev) {
+    autoUpdater.checkForUpdatesAndNotify();
+    setInterval(() => autoUpdater.checkForUpdatesAndNotify(), 4 * 60 * 60 * 1000);
+  }
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

@@ -137,3 +137,28 @@
 .reply-button {
   background-color: blue !important;
 }
+
+.update-banner {
+  background-color: #14532d;
+  color: #86efac;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+.update-banner-button {
+  background: transparent;
+  border: 1px solid rgba(134, 239, 172, 0.4);
+  color: #86efac;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.update-banner-button:hover {
+  background-color: rgba(134, 239, 172, 0.1);
+}
