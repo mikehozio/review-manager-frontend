@@ -28,8 +28,9 @@
     "eject": "react-scripts eject",
     "electron": "electron .",
     "electron:dev": "concurrently \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron .\"",
-    "electron:build": "npm run build && electron-builder --win",
-    "dist": "npm run build && electron-builder --win"
+    "electron:build": "npm run build && electron-builder --win --publish never",
+    "dist": "npm run build && electron-builder --win --publish never",
+    "release": "npm run build && electron-builder --win --publish always"
   },
   "eslintConfig": {
     "extends": [
@@ -63,6 +64,7 @@
       "node_modules/**/*",
       "package.json"
     ],
+    "asar": true,
     "extraMetadata": {
       "main": "electron.js"
     },
@@ -73,12 +75,6 @@
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
           "arch": [
             "x64"
           ]
@@ -95,7 +91,8 @@
     "publish": {
       "provider": "github",
       "owner": "mikehozio",
-      "repo": "review-manager-frontend"
+      "repo": "review-manager-frontend",
+      "releaseType": "release"
     }
   }
 }
