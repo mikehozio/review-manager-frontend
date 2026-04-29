@@ -6,20 +6,8 @@
   "description": "Review Manager Application",
   "author": "Beast Mode",
   "dependencies": {
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
-    "@mui/icons-material": "^5.15.18",
-    "@mui/lab": "^5.0.0-alpha.170",
-    "@mui/material": "^5.15.18",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "electron-is-dev": "^3.0.1",
     "electron-log": "^5.4.3",
-    "electron-updater": "^6.6.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "electron-updater": "^6.6.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -51,9 +39,19 @@
     ]
   },
   "devDependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.18",
+    "@mui/lab": "^5.0.0-alpha.170",
+    "@mui/material": "^5.15.18",
     "concurrently": "^9.2.1",
+    "cross-env": "^7.0.3",
     "electron": "^38.2.2",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-scripts": "5.0.1",
+    "wait-on": "^8.0.3"
   },
   "build": {
     "appId": "com.reviewmanager.app",
