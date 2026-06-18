@@ -10,6 +10,8 @@ function SingleReview ({ review, locationsObj, status, backendUrl }) {
     const [replying, setReplying] = useState(false);
     const [replyValue, setReplyValue] = useState('reviewReply' in review?review.reviewReply.comment:'');
     const [submitColor, setSubmitColor] = useState('primary')
+    const gbpid = review.name.split('/review')[0].split('locations/').slice(-1)[0];
+    const location = locationsObj.current[gbpid];
 
     const handleSubmit = async () => {
         console.log(replyValue);
@@ -41,7 +43,7 @@ function SingleReview ({ review, locationsObj, status, backendUrl }) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({reviewContent: review.comment ? review.comment : '', mainCategory: locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['mainCategory'], starRating: RATING_TO_INT[review.starRating], 'reviewerName': review.reviewer.displayName, 'companyName': locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['gbp_name'], 'companyAddress': locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['address']})
+            body: JSON.stringify({gbpid: gbpid, reviewContent: review.comment ? review.comment : '', mainCategory: location['mainCategory'], starRating: RATING_TO_INT[review.starRating], 'reviewerName': review.reviewer.displayName, 'companyName': location['gbp_name'], 'companyAddress': location['address']})
         });
         console.log(rawResponse);
         if (rawResponse.ok) {
@@ -63,7 +65,7 @@ function SingleReview ({ review, locationsObj, status, backendUrl }) {
                             <div className="reviewer-name-wrap"><span className="reviewer-name">{review.reviewer.displayName}</span></div>
                             <Stack className="stars" direction='row' spacing={0}>{Array(RATING_TO_INT[review.starRating]).fill(<StarIcon fontSize="small"/>)}{Array(5-RATING_TO_INT[review.starRating]).fill(<StarBorderIcon fontSize="small"/>)}</Stack>
                         </Stack>
-                    <div className="location-name-review"><a href={`https://www.google.com/search?q=${locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['gbp_name']} (${locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['address']})`.replace('&', '%26')} target="_blank"><span className="location-name">{`${locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['gbp_name']} (${locationsObj.current[review.name.split('/review')[0].split('locations/').slice(-1)[0]]['address']})`}</span></a></div>
+                    <div className="location-name-review"><a href={`https://www.google.com/search?q=${location['gbp_name']} (${location['address']})`.replace('&', '%26')} target="_blank"><span className="location-name">{`${location['gbp_name']} (${location['address']})`}</span></a></div>
                     </Stack>
                 </Stack>
                 <div className="review-date-wrap"><span className="raview-date">{new Date(review.createTime.split('T')[0]).toLocaleDateString()}</span></div>

@@ -1,8 +1,9 @@
 import './App.css';
 import * as React from 'react';
-import {Stack, Chip, MenuItem, FormControl, Select, Button, Tooltip, ButtonBase, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import {Stack, Chip, MenuItem, FormControl, Select, Button, Tooltip, ButtonBase, ToggleButtonGroup, ToggleButton, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DoNotDisturbOnIcon from '@mui/icons-material/DoNotDisturbOn';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SingleReview from './SingleReview';
 
@@ -24,6 +25,10 @@ function App() {
   const [allClicked, setAllClicked] = React.useState(true);
   const [repliedClicked, setRepliedClicked] = React.useState(false);
   const [notRepliedClicked, setNotRepliedClicked] = React.useState(false);
+  const [promptDefault, setPromptDefault] = React.useState('');
+  const customPromptsObj = React.useRef({});
+  const [promptDialogOpen, setPromptDialogOpen] = React.useState(false);
+  const [promptDraft, setPromptDraft] = React.useState('');
 
   React.useEffect(() => {
     const { ipcRenderer } = window.require('electron');
@@ -63,6 +68,15 @@ function App() {
           jsonres => {
             console.log(jsonres);
             activeLocStatusesObj.current = jsonres;
+          }
+        )
+      );
+      await fetch(`${BACKEND_URL}/get-prompts`).then(
+        res => res.json().then(
+          jsonres => {
+            console.log(jsonres);
+            setPromptDefault(jsonres['default'] || '');
+            customPromptsObj.current = jsonres['locations'] || {};
           }
         )
       );
@@ -175,6 +189,37 @@ function App() {
     ipcRenderer.invoke('restart-and-install');
   };
 
+  const handleOpenPromptDialog = () => {
+    const override = customPromptsObj.current[activeLoc];
+    setPromptDraft(override || promptDefault);
+    setPromptDialogOpen(true);
+  };
+
+  const handleResetPrompt = () => {
+    setPromptDraft(promptDefault);
+  };
+
+  const handleSavePrompt = async () => {
+    const rawResponse = await fetch(`${BACKEND_URL}/update-prompt`, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ gbpid: activeLoc, system: promptDraft })
+    });
+    if (rawResponse.ok) {
+      const trimmed = (promptDraft || '').trim();
+      const temp = { ...customPromptsObj.current };
+      if (!trimmed || trimmed === promptDefault) {
+        delete temp[activeLoc];
+      } else {
+        temp[activeLoc] = promptDraft;
+      }
+      customPromptsObj.current = temp;
+      setPromptDialogOpen(false);
+    } else {
+      console.log(rawResponse.status);
+    }
+  };
+
   return (
     <div className="App">
       {updateReady && (
@@ -183,6 +228,27 @@ function App() {
           <button className="update-banner-button" onClick={handleRestartAndInstall}>Restart to install</button>
         </div>
       )}
+      <Dialog open={promptDialogOpen} onClose={() => setPromptDialogOpen(false)} fullWidth maxWidth="md">
+        <DialogTitle>
+          System prompt{activeLoc!=='*' && locationsObj.current[activeLoc] ? ` for ${locationsObj.current[activeLoc].gbp_name}` : ''}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            multiline
+            rows={12}
+            fullWidth
+            value={promptDraft}
+            onChange={(e) => setPromptDraft(e.target.value)}
+            helperText="Available in the user message: Reviewer Name, Company Name, Main Category, Star Rating, Review Content."
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleResetPrompt}>Reset to default</Button>
+          <Button onClick={() => setPromptDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleSavePrompt}>Save</Button>
+        </DialogActions>
+      </Dialog>
       <Stack direction="row" className='page-wrapper' alignItems='flex-start' justifyContent='center' spacing={3}>
         <div className="sidebar sticky">
           <Stack direction="row" spacing={2} alignItems='center'>
@@ -201,6 +267,7 @@ function App() {
                 <DoNotDisturbOnIcon color='error'/>
               </ToggleButton>
             </ToggleButtonGroup>}
+            {activeLoc!=='*'&&<Tooltip title="Edit system prompt"><IconButton size="small" onClick={handleOpenPromptDialog}><EditOutlinedIcon fontSize="small"/></IconButton></Tooltip>}
           </Stack>
           <div className="sidebar-accounts-list-wrapper">
             <Stack className='accounts-list' spacing={1} alignItems='flex-start' >
