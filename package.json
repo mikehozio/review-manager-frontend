@@ -1,7 +1,7 @@
 {
   "name": "review-manager",
-  "version": "1.0.7",
-  "main": "electron.js",
+  "version": "1.0.8",
+  "main": "main.js",
   "homepage": "./",
   "description": "Review Manager Application",
   "author": "Beast Mode",
@@ -58,12 +58,12 @@
     "productName": "Review Manager",
     "files": [
       "build/**/*",
-      "electron.js",
+      "main.js",
       "package.json"
     ],
     "asar": true,
     "extraMetadata": {
-      "main": "electron.js"
+      "main": "main.js"
     },
     "directories": {
       "buildResources": "public"
